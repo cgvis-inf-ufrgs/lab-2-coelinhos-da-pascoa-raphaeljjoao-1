@@ -191,8 +191,8 @@ bool g_MiddleMouseButtonPressed = false; // Análogo para botão do meio do mous
 // efetiva da câmera é calculada dentro da função main(), dentro do loop de
 // renderização.
 float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
-float g_CameraPhi = 0.3f;   // Ângulo em relação ao eixo Y
-float g_CameraDistance = 3.5f; // Distância da câmera para a origem
+float g_CameraPhi = 0.5f;   // Ângulo em relação ao eixo Y
+float g_CameraDistance = 15.0f; // Distância da câmera para a origem
 
 // Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
@@ -206,7 +206,7 @@ float g_TorsoPositionY = 0.0f;
 bool g_UsePerspectiveProjection = true;
 
 // Variável que controla se o texto informativo será mostrado na tela.
-bool g_ShowInfoText = true;
+bool g_ShowInfoText = false;
 
 // Variáveis que definem um programa de GPU (shaders). Veja função LoadShadersFromFiles().
 GLuint g_GpuProgramID = 0;
@@ -273,7 +273,10 @@ int main(int argc, char* argv[])
     // redimensionada, por consequência alterando o tamanho do "framebuffer"
     // (região de memória onde são armazenados os pixels da imagem).
     glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
-    FramebufferSizeCallback(window, 800, 600); // Forçamos a chamada do callback acima, para definir g_ScreenRatio.
+    // Perguntamos ao sistema o tamanho real do framebuffer em pixels (vital para telas Retina/High-DPI)
+    int fb_width, fb_height;
+    glfwGetFramebufferSize(window, &fb_width, &fb_height);
+    FramebufferSizeCallback(window, fb_width, fb_height); // Chamamos com os pixels reais
 
     // Imprimimos no terminal informações sobre a GPU do sistema
     const GLubyte *vendor      = glGetString(GL_VENDOR);
@@ -365,7 +368,7 @@ int main(int argc, char* argv[])
         // Note que, no sistema de coordenadas da câmera, os planos near e far
         // estão no sentido negativo! Veja slides 176-204 do documento Aula_09_Projecoes.pdf.
         float nearplane = -0.1f;  // Posição do "near plane"
-        float farplane  = -10.0f; // Posição do "far plane"
+        float farplane  = -100.0f; // Posição do "far plane"
 
         if (g_UsePerspectiveProjection)
         {
@@ -400,21 +403,44 @@ int main(int argc, char* argv[])
         #define BUNNY  1
         #define PLANE  2
 
-        // Desenhamos o modelo da esfera
-        model = Matrix_Translate(-1.0f,0.0f,0.0f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, SPHERE);
-        DrawVirtualObject("the_sphere");
+        float time = (float)glfwGetTime();
+        int num_objects = 32; // 16 coelhos e 16 ovos (total de 32)
+        float radius = 6.0f;  // Aumentamos o raio para o círculo ficar maior e não amontoar
 
-        // Desenhamos o modelo do coelho
-        model = Matrix_Translate(1.0f,0.0f,0.0f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, BUNNY);
-        DrawVirtualObject("the_bunny");
+        for (int i = 0; i < num_objects; ++i) {
+            // Calcula a posição no círculo girando ao longo do tempo
+            float angle_offset = (2.0f * 3.141592f * i) / num_objects;
+            float angle = angle_offset + (time * 1.5f); 
+            
+            float x = radius * cos(angle);
+            float z = radius * sin(angle);
+            
+            // Faz o movimento de quicar
+            float y = std::abs(sin(angle * 2.0f)) * 1.5f; 
 
-        // Desenhamos o plano do chão
-        model = Matrix_Translate(0.0f,-1.0f,0.0f) * Matrix_Scale(4.0f,1.0f,4.0f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            // Faz o objeto dar a pirueta
+            glm::mat4 pirueta = Matrix_Rotate_X(time * 4.0f); 
+            
+            // Junta as transformações (Translada e DEPOIS Rotaciona localmente)
+            glm::mat4 model_base = Matrix_Translate(x, y, z) * pirueta;
+
+            if (i % 2 == 0) {
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model_base));
+                glUniform1i(g_object_id_uniform, BUNNY);
+                DrawVirtualObject("the_bunny");
+            } 
+            else {
+                // Deixa a esfera menor e oval para parecer um ovo
+                glm::mat4 model_ovo = model_base * Matrix_Scale(0.3f, 0.5f, 0.3f);
+                glUniformMatrix4fv(g_model_uniform, 1, GL_FALSE, glm::value_ptr(model_ovo));
+                glUniform1i(g_object_id_uniform, SPHERE);
+                DrawVirtualObject("the_sphere");
+            }
+        }
+
+        // Chão (escala ainda maior para o novo carrossel gigante)
+        glm::mat4 model_chao = Matrix_Translate(0.0f,-1.0f,0.0f) * Matrix_Scale(20.0f,1.0f,20.0f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model_chao));
         glUniform1i(g_object_id_uniform, PLANE);
         DrawVirtualObject("the_plane");
 

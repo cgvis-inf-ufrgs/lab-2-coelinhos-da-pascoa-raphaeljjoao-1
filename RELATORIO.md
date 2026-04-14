@@ -30,7 +30,16 @@
 > - Novamente, lembre-se que você *não pode utilizar ferramentas
 >   de IA para escrever este relatório*
 
-<mark>`<preencher>`</mark>
+- Alterar o tamanho para ocupar 100% da janela.
+- Desligar os textos de debug (variável g_ShowInfoText).
+- Aumentar a distância da câmera para mostrar a cena inteira.
+- Aumentar o limite de visão da câmera, resolvendo o problema de clipping quando zoom out era aplicado.
+- Aumentar a escala do chão para comportar todos os objetos.
+- Substituir o desenho estático por um loop for para desenharos 16 coelhos e 16 ovos.
+- Calcular as posições X e Z usando seno e cosseno baseados no tempo para criar o movimento de carrossel.
+- Aplicar uma matriz de rotação para fazer os objetos darem piruetas no ar.
+- Multiplicar as matrizes (de translação e de rotação, nessa ordem) para que o objeto gire em torno do próprio eixo.
+- Alternar a renderização entre coelho e esfera.
 
 ## Principais dificuldades encontradas durante o desenvolvimento (formato livre)
 
@@ -38,12 +47,12 @@
 
 ## Você acha que conseguiu resolver o problema de forma adequada?
 
-<mark>`<preencher>`</mark>
+Sim, mas a intercalação de subir e descer poderia ter ficado melhor.
 
 ## Se você quiser compartilhar mais alguma coisa, coloque aqui:
 
-<mark>`<preencher>`</mark>
+N/A
 
 ## Se você possui alguma sugestão para o professor sobre esta atividade, coloque aqui:
 
-<mark>`<preencher>`</mark>
+N/A
