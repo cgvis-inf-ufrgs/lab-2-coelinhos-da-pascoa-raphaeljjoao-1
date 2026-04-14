@@ -6,8 +6,8 @@
 
 ## Dados do aluno
 
-- **Cartão UFRGS**: <mark>`<preencher>`</mark>
-- **Nome**: <mark>`<preencher>`</mark>
+- **Cartão UFRGS**: <mark>`333315`</mark>
+- **Nome**: <mark>`João Raphael Fontoura Dorneles`</mark>
 
 ## Passos que eu segui para resolver o problema especificado (em formato de *"prompt"*)
 
@@ -34,7 +34,7 @@
 
 ## Principais dificuldades encontradas durante o desenvolvimento (formato livre)
 
-<mark>`<preencher>`</mark>
+- O Makefile estava adaptado para o Mac M1, precisei adaptar para o Mac M3.
 
 ## Você acha que conseguiu resolver o problema de forma adequada?
 
