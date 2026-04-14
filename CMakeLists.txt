@@ -100,22 +100,30 @@ if(WIN32)
 
   target_link_libraries(${EXECUTABLE_NAME} ${LIBGLFW} gdi32 opengl32)
 
-elseif(UNIX)
+elseif(APPLE)
 
   target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall -Wno-unused-function)
 
-  # Add custom target for 'run'
-  add_custom_target(run
-      COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ./main
-      DEPENDS main
-      USES_TERMINAL
+  find_package(OpenGL REQUIRED)
+  find_package(glfw3 REQUIRED)
+  find_package(Threads REQUIRED)
+
+  target_link_libraries(${EXECUTABLE_NAME}
+    glfw
+    ${OPENGL_LIBRARIES}
+    Threads::Threads
   )
+
+elseif(UNIX)
+
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall -Wno-unused-function)
 
   find_package(OpenGL REQUIRED)
   find_package(X11 REQUIRED)
   find_library(MATH_LIBRARY m)
   set(THREADS_PREFER_PTHREAD_FLAG ON)
   find_package(Threads REQUIRED)
+
   target_link_libraries(${EXECUTABLE_NAME}
     ${CMAKE_DL_LIBS}
     ${MATH_LIBRARY}
